@@ -8,9 +8,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Load env vars (optional – only needed for AI advantages)
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
+
+try:
+    import streamlit as st
+except ImportError:
+    st = None
 
 data = pd.read_csv("dataset.csv")
 data["content"] = (
@@ -96,6 +102,11 @@ def _static_advantages(project_row, advanced_mode):
 def _get_ai_advantages(project_name, domain, technologies, learning_topics, difficulty, advanced_mode):
     """Call Claude claude-haiku-3 to generate 4 compelling advantages. Returns list or None on failure."""
     api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key and st is not None:
+        try:
+            api_key = st.secrets.get("ANTHROPIC_API_KEY", "")
+        except Exception:
+            api_key = ""
     if not api_key:
         return None
 
@@ -132,9 +143,6 @@ Example: ["Advantage one here.", "Advantage two here.", "...", "..."]"""
         return json.loads(raw)
     except Exception:
         return None
-
-
-import streamlit as st  # noqa: E402
 
 
 @st.cache_data(ttl=3600)
