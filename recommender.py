@@ -32,13 +32,29 @@ tfidf_matrix = vectorizer.fit_transform(data["content"])
 
 
 def _apply_filters(frame, domain=None, difficulty=None, dataset_name=None):
+    def normalize_filter(value):
+        if value is None:
+            return None
+        cleaned = str(value).strip()
+        return None if not cleaned or cleaned.lower() == "all" else cleaned
+
+    domain = normalize_filter(domain)
+    difficulty = normalize_filter(difficulty)
+    dataset_name = normalize_filter(dataset_name)
+
     filtered = frame
-    if domain and domain != "All":
-        filtered = filtered[filtered["domain"] == domain]
-    if difficulty and difficulty != "All":
-        filtered = filtered[filtered["difficulty"] == difficulty]
-    if dataset_name and dataset_name != "All":
-        filtered = filtered[filtered["dataset"] == dataset_name]
+    if domain:
+        filtered = filtered[
+            filtered["domain"].astype(str).str.strip().str.casefold() == domain.casefold()
+        ]
+    if difficulty:
+        filtered = filtered[
+            filtered["difficulty"].astype(str).str.strip().str.casefold() == difficulty.casefold()
+        ]
+    if dataset_name:
+        filtered = filtered[
+            filtered["dataset"].astype(str).str.strip().str.casefold() == dataset_name.casefold()
+        ]
     return filtered
 
 

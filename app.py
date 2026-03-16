@@ -30,6 +30,11 @@ def load_data():
 
 dataset = load_data()
 
+
+def build_filter_options(series):
+    values = sorted({str(value).strip() for value in series.dropna() if str(value).strip()})
+    return ["All"] + values
+
 # ─────────────────────────────────────────────────────────────
 # PART 6 — Advanced Dark / Futuristic CSS Theme
 # ─────────────────────────────────────────────────────────────
@@ -327,9 +332,9 @@ ALL_SKILLS = [
 user_skills = st.sidebar.multiselect("Select skills you already know", ALL_SKILLS)
 
 st.sidebar.markdown("---")
-all_domains = ["All"] + sorted(dataset["domain"].dropna().unique().tolist())
-all_difficulties = ["All"] + sorted(dataset["difficulty"].dropna().unique().tolist())
-all_datasets = ["All"] + sorted(dataset["dataset"].dropna().unique().tolist())
+all_domains = build_filter_options(dataset["domain"])
+all_difficulties = build_filter_options(dataset["difficulty"])
+all_datasets = build_filter_options(dataset["dataset"])
 
 # ─────────────────────────────────────────────────────────────
 # HERO
@@ -567,14 +572,15 @@ elif page == "Idea Studio":
     with control_col:
         advanced_mode = st.toggle("⚡ Build advanced version", value=False)
         result_count = st.slider("Number of ideas", min_value=3, max_value=10, value=5)
-        selected_domain = st.selectbox("Preferred domain", all_domains)
+        selected_domain = st.selectbox("Preferred domain", all_domains, key="idea_domain")
         selected_difficulty = st.selectbox(
             "Difficulty level",
             ["All", "Beginner", "Intermediate", "Advanced"]
             if not advanced_mode
             else ["All", "Advanced", "Intermediate", "Beginner"],
+            key="idea_difficulty",
         )
-        selected_dataset = st.selectbox("Dataset type", all_datasets)
+        selected_dataset = st.selectbox("Dataset type", all_datasets, key="idea_dataset")
 
     # Clear random project after use
     if st.session_state.get("random_project") and user_goal:
