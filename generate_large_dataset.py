@@ -424,15 +424,30 @@ def generate_dataset(n_rows: int = 1000) -> pd.DataFrame:
         })
 
     df = pd.DataFrame(rows)
-    # Deduplicate on (project_name, domain, difficulty) so we keep variety
-    df = df.drop_duplicates(subset=["project_name", "domain", "difficulty"]).reset_index(drop=True)
-    # If after dedup we have fewer than n_rows, pad back up
+    # Keep multiple dataset variants for the same project/difficulty combination.
+    df = df.drop_duplicates(
+        subset=["project_name", "domain", "difficulty", "dataset"]
+    ).reset_index(drop=True)
     while len(df) < n_rows:
-        extra = generate_dataset(n_rows - len(df))
+        extra_rows = []
+        for _ in range(n_rows - len(df)):
+            proj = random.choice(PROJECTS)
+            name, domain, description, tech, topic = proj
+            difficulty = random.choice(DIFFICULTY_POOL)
+            dataset = random.choice(DATASETS)
+            extra_rows.append({
+                "project_name": name,
+                "domain": domain,
+                "description": description,
+                "technologies": tech,
+                "difficulty": difficulty,
+                "dataset": dataset,
+                "learning_topics": topic,
+            })
+        extra = pd.DataFrame(extra_rows)
         df = pd.concat([df, extra], ignore_index=True).drop_duplicates(
-            subset=["project_name", "domain", "difficulty"]
+            subset=["project_name", "domain", "difficulty", "dataset"]
         ).reset_index(drop=True)
-        break  # one pass is enough
     return df
 
 
