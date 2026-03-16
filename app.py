@@ -292,8 +292,8 @@ if "bookmarks" not in st.session_state:
     st.session_state["bookmarks"] = []
 if "random_project" not in st.session_state:
     st.session_state["random_project"] = None
-if "page_override" not in st.session_state:
-    st.session_state["page_override"] = None
+if "nav_page" not in st.session_state:
+    st.session_state["nav_page"] = "Overview"
 
 # ─────────────────────────────────────────────────────────────
 # SIDEBAR
@@ -305,21 +305,17 @@ bm_count = len(st.session_state["bookmarks"])
 bm_label = f"Saved Ideas {'✦' if bm_count > 0 else ''} ({bm_count})"
 
 # Page radio — handle override (from "Random Project" button)
-if st.session_state["page_override"]:
-    page_default_idx = ["Overview", "Idea Studio", "Project Explorer", bm_label].index(
-        st.session_state["page_override"]
-    ) if st.session_state["page_override"] in ["Overview", "Idea Studio", "Project Explorer", bm_label] else 1
-else:
-    page_default_idx = 0
+nav_options = ["Overview", "Idea Studio", "Project Explorer", bm_label]
+if st.session_state["nav_page"].startswith("Saved Ideas"):
+    st.session_state["nav_page"] = bm_label
+elif st.session_state["nav_page"] not in nav_options:
+    st.session_state["nav_page"] = "Overview"
 
 page = st.sidebar.radio(
     "Navigate",
-    ["Overview", "Idea Studio", "Project Explorer", bm_label],
-    index=page_default_idx,
+    nav_options,
+    key="nav_page",
 )
-# Clear override after use
-if st.session_state["page_override"]:
-    st.session_state["page_override"] = None
 
 # PART 2 — Skill Gap widget
 st.sidebar.markdown("---")
@@ -473,7 +469,7 @@ if page == "Overview":
     if st.button("🎲 Random Project → Idea Studio", use_container_width=True):
         rand_row = dataset.sample(1).iloc[0]
         st.session_state["random_project"] = rand_row.to_dict()
-        st.session_state["page_override"] = "Idea Studio"
+        st.session_state["nav_page"] = "Idea Studio"
         st.rerun()
 
     # Feature cards
