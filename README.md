@@ -1,9 +1,10 @@
 # ML-Based Project Idea Generator for Developers
 
-This is a Streamlit app that recommends machine learning project ideas based on user interests, project domain, difficulty level, and dataset type.
+---
 
-It is designed to help developers explore strong portfolio ideas, understand the skills behind each project, and plan what to build next.
+![status](https://img.shields.io/badge/status-active-success) ![backend](https://img.shields.io/badge/backend-Python_3-blue) ![frontend](https://img.shields.io/badge/frontend-Streamlit_1.40-FF4B4B) ![recommendation](https://img.shields.io/badge/recommendation-TF--IDF_Similarity-8A2BE2) ![AI](https://img.shields.io/badge/AI-Anthropic_API-orange)
 
+**ML-Based Project Idea Generator** is an interactive platform that recommends tailored machine learning project ideas based on user interests, project domain, difficulty level, and dataset type. It combines TF-IDF similarity for local recommendations with cloud LLMs (Anthropic API) to generate detailed project blueprints and advantages. Produces actionable learning resource suggestions, similar project lookups, and interactive visual insights using Plotly.
 ## Features
 
 - Project recommendations using TF-IDF similarity
